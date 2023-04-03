@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="my_scara">
+  
+  <!-- parametry xacro -->
+  <xacro:property name="wysokosc_bazy" value="1.6"/>
+  <xacro:property name="promien_bazy" value="0.88"/>
+  <xacro:property name="masa_bazy" value="10"/>
+  <xacro:property name="dlugosc_ramienia_1" value="2.01"/>
+  <xacro:property name="dlugosc_ramienia_2" value="0.88"/>
+  <xacro:property name="dlugosc_ramienia_3" value="1.53"/>
+  <xacro:property name="promien_ramienia_4" value="0.6"/>
+  <xacro:property name="dlugosc_ramienia_5" value="0.4"/>
+  <xacro:property name="promien_ramienia_6" value="0.2"/>
+  <xacro:property name="dlugosc_ramienia_4a" value="0.26"/>
+  <xacro:property name="szerokosc_ramienia_1" value="1.6"/>
+  <xacro:property name="szerokosc_ramienia_2" value="1.31"/>
+  <xacro:property name="szerokosc_ramienia_3" value="1.31"/>
+  <xacro:property name="szerokosc_ramienia_4a" value="0.55"/>
+  <xacro:property name="szerokosc_ramienia_5" value="0.4"/>
+  <xacro:property name="wysokosc_ramienia_1" value="2.25"/>
+  <xacro:property name="wysokosc_ramienia_2" value="3.65"/>
+  <xacro:property name="wysokosc_ramienia_3" value="1.66"/>
+  <xacro:property name="wysokosc_ramienia_4" value="1.2"/>
+  <xacro:property name="wysokosc_ramienia_5" value="1.1"/>
+  <xacro:property name="wysokosc_ramienia_6" value="0.1"/>
+  <xacro:property name="wysokosc_ramienia_4a" value="0.9"/>
+  <xacro:property name="masa_ramienia_1" value="10"/>
+  <xacro:property name="masa_ramienia_2" value="10"/>
+  <xacro:property name="masa_ramienia_3" value="5"/>
+  <xacro:property name="masa_ramienia_4" value="3"/>
+  <xacro:property name="masa_ramienia_4a" value="1"/>
+  <xacro:property name="masa_ramienia_5" value="2"/>
+  <xacro:property name="masa_ramienia_6" value="0.5"/>
+  
+  <!-- makra xacro -->
+  <xacro:macro name="cylinder_inercja" params="m R L">
+    <inertia ixx="${0.0833333*m*(3*R*R+L*L)}" ixy="0" ixz="0" iyy="${0.0833333*m*(3*R*R+L*L)}" iyz="0" izz="${0.5*m*R*R}"/>
+  </xacro:macro>
+  
+  <xacro:macro name="pudelko_inercja" params="m x y z">
+    <inertia ixx="${0.0833333*m*(y*y+z*z)}" ixy="0" ixz="0" iyy="${0.0833333*m*(x*x+z*z)}" iyz="0" izz="${0.0833333*m*(y*y+x*x)}"/>
+  </xacro:macro>
+  
+  <!-- materialy -->
+  <material name="gold">
+    <color rgba="1 0.823 0.078 1.0"/>
+  </material>
+  
+  <material name="yellow">
+    <color rgba="0.988 0.866 0.211 1.0"/>
+  </material>
+  
+  <material name="silver">
+    <color rgba="0.741 0.741 0.741 1.0"/>
+  </material>
+  
+  <material name="black">
+    <color rgba="0.160 0.160 0.160 1.0"/>
+  </material>
+  
+  
+  <!-- czlony -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <cylinder length="${wysokosc_bazy}" radius="${promien_bazy}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_bazy/2}"/>
+      <material name="gold"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${wysokosc_bazy}" radius="${promien_bazy}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_bazy/2}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_bazy/2}"/>
+      <mass value="${masa_bazy}"/>
+      <xacro:cylinder_inercja m="${masa_bazy}" R="${promien_bazy}" L="${wysokosc_bazy}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm1_link">
+    <visual>
+      <geometry>
+        <box size="${dlugosc_ramienia_1} ${szerokosc_ramienia_1} ${wysokosc_ramienia_1}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${(dlugosc_ramienia_1/2)-(promien_bazy)} 0 ${wysokosc_ramienia_1/2}"/>
+      <material name="yellow"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${dlugosc_ramienia_1} ${szerokosc_ramienia_1} ${wysokosc_ramienia_1}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_1/2} 0 ${wysokosc_ramienia_1/2}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_1/2} 0 ${wysokosc_ramienia_1/2}"/>
+      <mass value="${masa_ramienia_1}"/>
+      <xacro:pudelko_inercja m="${masa_ramienia_1}" x="${dlugosc_ramienia_1}" y="${szerokosc_ramienia_1}" z="${wysokosc_ramienia_1}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm2_link">
+    <visual>
+      <geometry>
+        <box size="${dlugosc_ramienia_2} ${szerokosc_ramienia_2} ${wysokosc_ramienia_2}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_2/2} 0 ${(wysokosc_ramienia_2/2)-(wysokosc_ramienia_1/3)}"/>
+      <material name="gold"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${dlugosc_ramienia_2} ${szerokosc_ramienia_2} ${wysokosc_ramienia_2}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_2/2} 0 ${wysokosc_ramienia_2/2}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_2/2} 0 ${wysokosc_ramienia_2/2}"/>
+      <mass value="${masa_ramienia_2}"/>
+      <xacro:pudelko_inercja m="${masa_ramienia_2}" x="${dlugosc_ramienia_2}" y="${szerokosc_ramienia_2}" z="${wysokosc_ramienia_2}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm3_link">
+    <visual>
+      <geometry>
+        <box size="${dlugosc_ramienia_3} ${szerokosc_ramienia_3} ${wysokosc_ramienia_3}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${-dlugosc_ramienia_3/2} 0 ${(wysokosc_ramienia_3/2)-1.02}"/>
+      <material name="yellow"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${dlugosc_ramienia_3} ${szerokosc_ramienia_3} ${wysokosc_ramienia_3}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_3/2} 0 ${wysokosc_ramienia_3/2}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_3/2} 0 ${wysokosc_ramienia_3/2}"/>
+      <mass value="${masa_ramienia_3}"/>
+      <xacro:pudelko_inercja m="${masa_ramienia_3}" x="${dlugosc_ramienia_3}" y="${szerokosc_ramienia_3}" z="${wysokosc_ramienia_3}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm4_link">
+    <visual>
+      <geometry>
+        <cylinder length="${wysokosc_ramienia_4}" radius="${promien_ramienia_4}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_4/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+      <material name="gold"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${wysokosc_ramienia_4}" radius="${promien_ramienia_4}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_4/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_4/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+      <mass value="${masa_ramienia_4}"/>
+      <xacro:cylinder_inercja m="${masa_ramienia_4}" R="${promien_ramienia_4}" L="${wysokosc_ramienia_4}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm4a_link">
+    <visual>
+      <geometry>
+        <box size="${dlugosc_ramienia_4a} ${szerokosc_ramienia_4a} ${wysokosc_ramienia_4a}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_4a/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+      <material name="silver"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${dlugosc_ramienia_4a} ${szerokosc_ramienia_4a} ${wysokosc_ramienia_4a}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_4a/2} 0 ${wysokosc_ramienia_4a/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_4a/2} 0 ${wysokosc_ramienia_4a/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+      <mass value="${masa_ramienia_4a}"/>
+      <xacro:pudelko_inercja m="${masa_ramienia_4a}" x="${dlugosc_ramienia_4a}" y="${szerokosc_ramienia_4a}" z="${wysokosc_ramienia_4a}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm4b_link">
+    <visual>
+      <geometry>
+        <box size="${dlugosc_ramienia_4a} ${szerokosc_ramienia_4a} ${wysokosc_ramienia_4a}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_4a/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+      <material name="silver"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${dlugosc_ramienia_4a} ${szerokosc_ramienia_4a} ${wysokosc_ramienia_4a}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_4a/2} 0 ${wysokosc_ramienia_4a/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_4a/2} 0 ${wysokosc_ramienia_4a/2+((wysokosc_ramienia_3/2)-1.02)}"/>
+      <mass value="${masa_ramienia_4a}"/>
+      <xacro:pudelko_inercja m="${masa_ramienia_4a}" x="${dlugosc_ramienia_4a}" y="${szerokosc_ramienia_4a}" z="${wysokosc_ramienia_4a}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm5_link">
+    <visual>
+      <geometry>
+        <box size="${dlugosc_ramienia_5} ${szerokosc_ramienia_5} ${wysokosc_ramienia_5}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_5/2} 0 ${(wysokosc_ramienia_5/2)-(wysokosc_ramienia_4a/2)}"/>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${dlugosc_ramienia_5} ${szerokosc_ramienia_5} ${wysokosc_ramienia_5}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_5/2} 0 ${(wysokosc_ramienia_5/2)-(wysokosc_ramienia_4a/2)}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="${dlugosc_ramienia_5/2} 0 ${(wysokosc_ramienia_5/2)-(wysokosc_ramienia_4a/2)}"/>
+      <mass value="${masa_ramienia_5}"/>
+      <xacro:pudelko_inercja m="${masa_ramienia_5}" x="${dlugosc_ramienia_5}" y="${szerokosc_ramienia_5}" z="${wysokosc_ramienia_5}"/>
+    </inertial>
+  </link>
+  
+  <link name="arm6_link">
+    <visual>
+      <geometry>
+        <cylinder length="${wysokosc_ramienia_6}" radius="${promien_ramienia_6}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_6/2}"/>
+      <material name="silver"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${wysokosc_ramienia_6}" radius="${promien_ramienia_6}"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_6/2}"/>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 ${wysokosc_ramienia_6/2}"/>
+      <mass value="${masa_ramienia_6}"/>
+      <xacro:cylinder_inercja m="${masa_ramienia_6}" R="${promien_ramienia_6}" L="${wysokosc_ramienia_6}"/>
+    </inertial>
+  </link>
+  
+  <!-- zlacza -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="arm1_link"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="0 0 0" xyz="0 0 ${wysokosc_bazy}"/>
+    <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="1.0"/>
+  </joint>
+  
+  <joint name="joint2" type="revolute">
+    <parent link="arm1_link"/>
+    <child link="arm2_link"/>
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="${dlugosc_ramienia_1-promien_bazy} 0 ${(wysokosc_ramienia_1/2)+(wysokosc_ramienia_1/6)}"/>
+    <limit effort="1000.0" lower="-2.18" upper="2.18" velocity="1.0"/>
+  </joint>
+  
+  <joint name="joint3" type="revolute">
+    <parent link="arm2_link"/>
+    <child link="arm3_link"/>
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 2.25"/>
+    <limit effort="1000.0" lower="-2.41" upper="2.41" velocity="1.0"/>
+  </joint>
+  
+  <joint name="joint4" type="revolute">
+    <parent link="arm3_link"/>
+    <child link="arm4_link"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="0 0 0" xyz="${-dlugosc_ramienia_3/2} 0 ${wysokosc_ramienia_3/2}"/>
+    <limit effort="1000.0" lower="-3.32" upper="3.32" velocity="1.0"/>
+  </joint>
+  
+  <joint name="joint4a" type="fixed">
+    <parent link="arm4_link"/>
+    <child link="arm4a_link"/>
+    <origin rpy="0 0 0" xyz="-0.33 0 ${wysokosc_ramienia_4}"/>
+  </joint>
+  
+  <joint name="joint4b" type="fixed">
+    <parent link="arm4_link"/>
+    <child link="arm4b_link"/>
+    <origin rpy="0 0 0" xyz="0.33 0 ${wysokosc_ramienia_4}"/>
+  </joint>
+  
+  <joint name="joint5" type="revolute">
+    <parent link="arm4a_link"/>
+    <child link="arm5_link"/>
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="${dlugosc_ramienia_4a/2} 0 ${wysokosc_ramienia_4a/2}"/>
+    <limit effort="1000.0" lower="-2.09" upper="2.33" velocity="1.0"/>
+  </joint>
+  
+  <joint name="joint6" type="revolute">
+    <parent link="arm5_link"/>
+    <child link="arm6_link"/>
+    <axis xyz="0 0 1"/>
+    <origin rpy="0 0 0" xyz="${dlugosc_ramienia_5/2} 0 ${wysokosc_ramienia_5-wysokosc_ramienia_4a/2}"/>
+    <limit effort="1000.0" lower="-4.71" upper="4.71" velocity="1.0"/>
+  </joint>
+  
+</robot>
